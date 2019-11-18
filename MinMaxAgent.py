@@ -2,8 +2,8 @@
 # Copyright 2018 Carsten Friedrich (Carsten.Friedrich@gmail.com). All rights reserved
 #
 
-from tic_tac_toe.Board import Board, EMPTY, GameResult
-from tic_tac_toe.Player import Player
+from Board import Board, EMPTY, GameResult
+from Player import Player
 
 
 class MinMaxAgent(Player):

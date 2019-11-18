@@ -3,12 +3,12 @@
 #
 from abc import ABC, abstractmethod
 
-from connect_four_neural_net.Board import Board, GameResult
+from Board import Board, GameResult
 
 
 class Player(ABC):
     """
-    Abstract class defining the interface we expect any Tic Tac Toe player class to implement.
+    Abstract class defining the interface we expect any Connect Four player class to implement.
     This will allow us to pit various different implementation against each other
     """
 
