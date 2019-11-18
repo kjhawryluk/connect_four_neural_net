@@ -3,8 +3,8 @@
 #
 from typing import Dict, List
 
-from tic_tac_toe.Board import Board, GameResult, NAUGHT, CROSS
-from tic_tac_toe.Player import Player
+from Board import Board, GameResult, RED, BLACK
+from Player import Player
 
 import numpy as np
 
@@ -83,11 +83,11 @@ class TQPlayer(Player):
         Gets called after the game has finished. Will update the current Q function based on the game outcome.
         :param result: The result of the game that has finished.
         """
-        if (result == GameResult.NAUGHT_WIN and self.side == NAUGHT) or (
-                result == GameResult.CROSS_WIN and self.side == CROSS):
+        if (result == GameResult.BLACK_WIN and self.side == BLACK) or (
+                result == GameResult.RED_WIN and self.side == RED):
             final_value = WIN_VALUE  # type: float
-        elif (result == GameResult.NAUGHT_WIN and self.side == CROSS) or (
-                result == GameResult.CROSS_WIN and self.side == NAUGHT):
+        elif (result == GameResult.BLACK_WIN and self.side == RED) or (
+                result == GameResult.RED_WIN and self.side == BLACK):
             final_value = LOSS_VALUE  # type: float
         elif result == GameResult.DRAW:
             final_value = DRAW_VALUE  # type: float

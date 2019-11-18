@@ -7,10 +7,10 @@
 import numpy as np
 import random
 import tensorflow as tf
-from tic_tac_toe.TFSessionManager import TFSessionManager as TFSN
+from TFSessionManager import TFSessionManager as TFSN
 
-from tic_tac_toe.Board import Board, BOARD_SIZE, EMPTY, CROSS, NAUGHT
-from tic_tac_toe.Player import Player, GameResult
+from Board import Board, BOARD_SIZE, EMPTY, RED, BLACK
+from Player import Player, GameResult
 
 
 class QNetwork:
@@ -333,11 +333,11 @@ class ExpDoubleDuelQPlayer(Player):
         self.game_counter += 1
 
         # Compute the final reward based on the game outcome
-        if (result == GameResult.NAUGHT_WIN and self.side == NAUGHT) or (
-                result == GameResult.CROSS_WIN and self.side == CROSS):
+        if (result == GameResult.BLACK_WIN and self.side == BLACK) or (
+                result == GameResult.RED_WIN and self.side == RED):
             reward = self.win_value  # type: float
-        elif (result == GameResult.NAUGHT_WIN and self.side == CROSS) or (
-                result == GameResult.CROSS_WIN and self.side == NAUGHT):
+        elif (result == GameResult.BLACK_WIN and self.side == RED) or (
+                result == GameResult.RED_WIN and self.side == BLACK):
             reward = self.loss_value  # type: float
         elif result == GameResult.DRAW:
             reward = self.draw_value  # type: float
