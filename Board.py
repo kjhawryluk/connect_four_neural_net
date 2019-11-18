@@ -46,7 +46,7 @@ class Board:
     #
     WIN_CHECK_DIRS = [[(0, -1), (0, 1)],   # Horizontal
                       [(-1, -1), (1, 1)],  # Diagonal bottom left to top right
-                      [(1, -1), (-1, 1)]   # Diagonal top left to bottom right
+                      [(1, -1), (-1, 1)],   # Diagonal top left to bottom right
                       [(-1, 0)]            # Vertical
                       ]
 
@@ -127,13 +127,27 @@ class Board:
         Returns a random empty spot on the board in 1D coordinates
         :return: A random empty spot on the board in 1D coordinates
         """
-        index = np.random.randint(self.num_empty())
-        for i in range(BOARD_SIZE):
-            if self.state[i] == EMPTY:
-                if index == 0:
-                    return i
-                else:
-                    index = index - 1
+        while True:
+            index = np.random.randint(self.num_empty())
+            for i in range(BOARD_SIZE):
+                if self.state[i] == EMPTY:
+                    if index == 0:
+                        if self.is_legal(i):
+                            return i
+                    else:
+                        index = index - 1
+        # top_filled_spots = self.get_top_disc_positions()
+        # top_open_spots = list(spot + BOARD_WIDTH for spot in top_filled_spots if spot < BOARD_SIZE - BOARD_WIDTH)
+        #
+        # # Add empty columns
+        # columns_used = list(pos % BOARD_WIDTH for pos in top_filled_spots)
+        # for col in range(BOARD_WIDTH):
+        #     if col not in columns_used:
+        #         top_open_spots.append(col)
+        #
+        # # Choose a slot.
+        # index = np.random.randint(0, len(top_open_spots))
+        # return top_open_spots[index]
 
     def is_legal(self, pos: int) -> bool:
         """
@@ -154,11 +168,12 @@ class Board:
         :param side: What piece we want to play (RED, or BLACK)
         :return: The game state after the move, The game result after the move, Whether the move finished the game
         """
-        if self.state[position] != EMPTY:
-            print('Illegal move')
-            raise ValueError("Invalid move")
+        if position > -1:
+            if self.state[position] != EMPTY:
+                print('Illegal move')
+                raise ValueError("Invalid move")
 
-        self.state[position] = side
+            self.state[position] = side
 
         if self.check_win():
             return self.state, GameResult.RED_WIN if side == RED else GameResult.BLACK_WIN, True
@@ -180,10 +195,10 @@ class Board:
         """
         row = pos // BOARD_WIDTH
         col = pos % BOARD_WIDTH
-        row += direction[0] * BOARD_WIDTH
+        row += direction[0]
         if row < 0 or row > BOARD_HEIGHT:
             return -1
-        col += direction[1] * BOARD_HEIGHT
+        col += direction[1]
         if col < 0 or col > BOARD_WIDTH:
             return -1
 
@@ -204,7 +219,7 @@ class Board:
 
         next_pos = self.apply_dir(pos, direction)
 
-        while next_pos > -1 and self.state[next_pos] == c:
+        while -1 < next_pos < BOARD_SIZE and self.state[next_pos] == c:
             count += 1
             next_pos = self.apply_dir(next_pos, direction)
 
@@ -243,9 +258,9 @@ class Board:
         starting_top_pos = (BOARD_HEIGHT - 1) * BOARD_WIDTH
         top_disc_positions = []
         for top_pos in range(starting_top_pos, BOARD_SIZE):
-            while top_pos > 0 and self.state[top_pos] == EMPTY:
+            while top_pos >= BOARD_WIDTH and self.state[top_pos] == EMPTY:
                 top_pos -= BOARD_WIDTH
-            if top_pos > 0:
+            if top_pos >= 0:
                 top_disc_positions.append(top_pos)
 
         return top_disc_positions
@@ -255,11 +270,12 @@ class Board:
         Check whether either side has won the game and return the winner
         :return: If one player has won, that player; otherwise EMPTY
         """
-        for top_pos in enumerate(self.get_top_disc_positions()):
+        top_positions = self.get_top_disc_positions()
+        for top_pos in top_positions:
             for win_direction in self.WIN_CHECK_DIRS:
                 count_in_a_row = 0
                 for direction in win_direction:
-                    count_in_a_row += self.check_win_in_dir(top_pos, direction)
+                    count_in_a_row += self.count_in_direction(top_pos, direction)
                     if count_in_a_row >= 4:
                         return self.state[top_pos]
 
