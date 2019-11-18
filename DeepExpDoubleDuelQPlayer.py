@@ -1,6 +1,6 @@
 #
-# Copyright 2017 Carsten Friedrich (Carsten.Friedrich@gmail.com). All rights reserved
-#
+# Based on Tic-tac-toe game: https://github.com/fcarsten/tic-tac-toe
+# And
 # Based on https://github.com/awjuliani/DeepRL-Agents/blob/master/Double-Dueling-DQN.ipynb
 #
 
