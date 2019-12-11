@@ -55,12 +55,13 @@ class Board:
         Encode the current state of the game (board positions) as an integer. Will be used for caching evaluations
         :return: A collision free hash value representing the current board state
         """
+        resStr = ''
         res = 0
         for i in range(BOARD_SIZE):
-            res *= 3
-            res += self.state[i]
+            #res *= 3
+            resStr += str(self.state[i])
 
-        return res
+        return resStr
 
     @staticmethod
     def other_side(side: int) -> int:

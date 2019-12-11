@@ -17,7 +17,7 @@ class QNetwork:
     Contains a TensorFlow graph which is suitable for learning the Tic Tac Toe Q function
     """
 
-    def __init__(self, name: str, learning_rate: float):
+    def __init__(self, name: str, learning_rate: float, restore_net: bool = False):
         """
         Constructor for QNetwork. Takes a name and a learning rate for the GradientDescentOptimizer
         :param name: Name of the network
@@ -30,7 +30,10 @@ class QNetwork:
         self.q_values = None
         self.probabilities = None
         self.train_step = None
-        self.build_graph(name)
+        if restore_net:
+            self.restore_net()
+        else:
+            self.build_graph(name)
 
     def add_dense_layer(self, input_tensor: tf.Tensor, output_size: int, activation_fn=None,
                         name: str = None) -> tf.Tensor:
@@ -68,6 +71,25 @@ class QNetwork:
             self.train_step = tf.train.GradientDescentOptimizer(learning_rate=self.learningRate).minimize(mse,
                                                                                                           name='train')
 
+    def restore_net(self):
+        with tf.Session() as sess:
+            saver = tf.train.import_meta_graph( './' + self.name + '-1000.meta')
+            saver.restore(sess, tf.train.latest_checkpoint('./'))
+            graph = tf.get_default_graph()
+            self.input_positions = graph.get_tensor_by_name(self.name + '/inputs:0')
+            self.target_input = graph.get_tensor_by_name(self.name + '/targets:0')
+            self.q_values = graph.get_tensor_by_name(self.name + '/q_values/BiasAdd:0')
+            self.probabilities = graph.get_tensor_by_name(self.name + '/probabilities:0')
+            mse = tf.losses.mean_squared_error(predictions=self.q_values, labels=self.target_input)
+            self.train_step = tf.train.GradientDescentOptimizer(learning_rate=self.learningRate).minimize(mse,
+                                                                                                          name='train')
+
+
+    def save_net(self):
+        with TFSN.get_session() as sess:
+            sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver()
+            saver.save(sess, './' + self.name, global_step=1000)
 
 class NNQPlayer(Player):
     """
@@ -89,7 +111,7 @@ class NNQPlayer(Player):
         return res.reshape(-1)
 
     def __init__(self, name: str, reward_discount: float = 0.95, win_value: float = 1.0, draw_value: float = 0.0,
-                 loss_value: float = -1.0, learning_rate: float = 0.01, training: bool = True):
+                 loss_value: float = -1.0, learning_rate: float = 0.01, training: bool = True, restore_net: bool = False):
         """
         Constructor for the Neural Network player.
         :param name: The name of the player. Also the name of its TensorFlow scope. Needs to be unique
@@ -111,7 +133,7 @@ class NNQPlayer(Player):
         self.next_max_log = []
         self.values_log = []
         self.name = name
-        self.nn = QNetwork(name, learning_rate)
+        self.nn = QNetwork(name, learning_rate, restore_net)
         self.training = training
         super().__init__()
 

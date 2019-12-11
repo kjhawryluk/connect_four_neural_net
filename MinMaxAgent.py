@@ -83,7 +83,7 @@ class MinMaxAgent(Player):
             min_value = self.LOSS_VALUE
             action = -1
         else:
-            for index in [i for i, e in enumerate(board.state) if board.state[i] == EMPTY]:
+            for index in [i for i, e in enumerate(board.state) if board.state[i] == EMPTY and board.is_legal(i)]:
                 b = Board(board.state)
                 b.move(index, board.other_side(self.side))
 
@@ -134,7 +134,7 @@ class MinMaxAgent(Player):
             max_value = self.LOSS_VALUE
             action = -1
         else:
-            for index in [i for i, e in enumerate(board.state) if board.state[i] == EMPTY]:
+            for index in [i for i, e in enumerate(board.state) if board.state[i] == EMPTY and board.is_legal(i)]:
                 b = Board(board.state)
                 b.move(index, self.side)
 
